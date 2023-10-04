@@ -26,7 +26,6 @@ const backgroundStyled = {
 	display: "flex",
 	justifyContent: "center",
 	alignItems: "center",
-	// backgroundColor: darkMode ? "#222" : "#fff",
 };
 
 function App() {
