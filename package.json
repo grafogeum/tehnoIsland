@@ -2,7 +2,7 @@
   "name": "floating-portal",
   "version": "0.1.0",
   "private": true,
-  "homepage": ".",
+  "homepage": "./",
   "dependencies": {
     "@react-three/drei": "9.14.3",
     "@react-three/fiber": "8.0.26",
