@@ -5,7 +5,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
 
 export const FloatingIsland = () => {
-    const glft = useLoader(GLTFLoader, process.env.PUBLIC_URL + "models/floating_island.glb");
+    const glft = useLoader(GLTFLoader, "./models/floating_island.glb");
 
     useEffect(() => {
         if (!glft) return

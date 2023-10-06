@@ -4,7 +4,7 @@ import { Howl } from 'howler';
 export const SoundPlayer = ({ playSoundSignal }) => {
     const [sound] = useState(
         new Howl({
-            src: ['http://localhost:3000/sounds/nani.mp3'],
+            src: ['./sounds/nani.mp3'],
             volume: 1.0,
             loop: true,
         })

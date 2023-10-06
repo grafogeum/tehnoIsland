@@ -71,6 +71,7 @@ function App() {
 	const [darkMode, setDarkMode] = useState(false);
 	const [playSoundSignal, setPlaySoundSignal] = useState(false);
 	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+	const [isMenuOpen, setIsMenuOpen] = useState(false);
 
 	const handleDarkModeToggle = _.debounce(() => {
 		setIsButtonDisabled(true);
@@ -116,7 +117,7 @@ function App() {
 					</div>
 				</div>
 
-				<div>
+				<div onClick={() => setIsMenuOpen(!isMenuOpen)}>
 					<Canvas style={CanvasSizeStyles}>
 						{spotLights.map((spotLight, index) => (
 							<spotLight
@@ -131,7 +132,7 @@ function App() {
 								target-position={[0, 0, -1]}
 							/>
 						))}
-						<SceneContainer darkMode={darkMode} />
+						<SceneContainer darkMode={darkMode} isMenuOpen={isMenuOpen} />
 					</Canvas>
 				</div>
 			</div>

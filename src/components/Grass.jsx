@@ -17,7 +17,7 @@ const setupMaterial = (object) => {
 };
 
 export function Grass() {
-    const gltf = useLoader(GLTFLoader, process.env.PUBLIC_URL + "/models/grass.glb");
+    const gltf = useLoader(GLTFLoader, "./models/grass.glb");
 
     useEffect(() => {
         if (!gltf) return;

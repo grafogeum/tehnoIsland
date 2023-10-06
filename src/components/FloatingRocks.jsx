@@ -6,9 +6,9 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { useHighLight } from './hooks/useHighLight';
 
 export function FloatingRocks({ darkMode }) {
-    const rock1 = useLoader(GLTFLoader, process.env.PUBLIC_URL + "/models/floating_rock_1.glb");
-    const rock2 = useLoader(GLTFLoader, process.env.PUBLIC_URL + "/models/floating_rock_2.glb");
-    const rock3 = useLoader(GLTFLoader, process.env.PUBLIC_URL + "/models/floating_rock_3.glb");
+    const rock1 = useLoader(GLTFLoader, "./models/floating_rock_1.glb");
+    const rock2 = useLoader(GLTFLoader, "./models/floating_rock_2.glb");
+    const rock3 = useLoader(GLTFLoader, "./models/floating_rock_3.glb");
 
     const { highLight, increaseHighLight, resetHighLight } = useHighLight(2.5, 5)
 

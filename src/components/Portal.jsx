@@ -6,7 +6,7 @@ import { useHighLight } from './hooks/useHighLight';
 import { FillQuad } from './FillQuad';
 
 const scene = new Scene()
-scene.background = new TextureLoader().load(process.env.PUBLIC_URL + "/textures/seamless-texture2.png", texture => {
+scene.background = new TextureLoader().load("./textures/seamless-texture2.png", texture => {
     texture.encoding = LinearEncoding
     texture.mapping = EquirectangularReflectionMapping
 })
@@ -20,8 +20,8 @@ window.addEventListener('resize', () => {
 })
 
 export function Portal() {
-    const model = useLoader(GLTFLoader, process.env.PUBLIC_URL + "/models/portal.glb");
-    const mask = useLoader(GLTFLoader, process.env.PUBLIC_URL + "/models/portal_mask.glb");
+    const model = useLoader(GLTFLoader, "./models/portal.glb");
+    const mask = useLoader(GLTFLoader, "./models/portal_mask.glb");
 
     const { highLight, increaseHighLight, resetHighLight } = useHighLight(3.5, 5)
 

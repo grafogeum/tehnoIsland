@@ -1,8 +1,8 @@
-import { useState, useMemo, Suspense } from 'react';
+import { useState, useMemo, Suspense, useRef, useEffect } from 'react';
 import { Color, CylinderGeometry, Mesh, MeshBasicMaterial } from 'three';
 import { BrightnessContrast, ChromaticAberration, DepthOfField, EffectComposer, GodRays, HueSaturation } from "@react-three/postprocessing";
 import { BlendFunction, Resizer, KernelSize } from 'postprocessing';
-import { OrbitControls, PerspectiveCamera, Environment, Float } from "@react-three/drei";
+import { OrbitControls, PerspectiveCamera, Environment, Float, Lightformer } from "@react-three/drei";
 import { FloatingIsland } from "./FloatingIsland";
 import { Portal } from './Portal';
 import { Rocks } from './Rocks';
@@ -13,21 +13,81 @@ import { useFrame } from '@react-three/fiber';
 import { SceneParticles } from './SceneParticles';
 
 let lightColor = new Color(0.2, 1, 0.1)
-let mesh = new Mesh(
-    new CylinderGeometry(0.3, 0.3, 0.2),
+// let meshInside = new Mesh(
+//     new CylinderGeometry(0.3, 0.3, 0.2),
+//     new MeshBasicMaterial({
+//         color: lightColor,
+//         transparent: true,
+//         opacity: 1
+//     })
+// )
+let meshInside = new Mesh(
+    new CylinderGeometry(0.15, 0.15, 0.65),
     new MeshBasicMaterial({
-        color: lightColor,
+        color: '#00b0cf',
         transparent: true,
         opacity: 1
     })
 )
+let mesh = new Mesh(
+    new CylinderGeometry(0.09, 0.1, 0.6),
+    new MeshBasicMaterial({
+        color: 'rgb(152, 26, 9)',
+        transparent: false,
+        opacity: 1
+    })
+)
+
 mesh.rotation.x = Math.PI * 0.5
-mesh.position.set(1.17, 10.7, -4.1)
+mesh.position.set(1.17, 10.9, -4)
 mesh.scale.set(1.5, 1, 1)
-export const SceneContainer = ({ darkMode }) => {
+
+
+let xOffset = 0;
+export const SceneContainer = ({ darkMode = false, isMenuOpen }) => {
     const targetHue = useMemo(() => (darkMode ? 5 : 0), [darkMode]);
     const [hue, setHue] = useState(targetHue);
+    const [userControlCamera, setUserControlCamera] = useState(false);
 
+    useEffect(() => {
+        setUserControlCamera(isMenuOpen)
+    }, [isMenuOpen])
+
+
+    const cameraRef = useRef();
+
+    // Funkcja do delikatnego obracania kamery
+    const rotateCamera = (camera, xOffset) => {
+        const time = performance.now() * 0.0001; // Zmienne tempo obrotu kamery
+        let radius = 3; // Promień obrotu
+        // setTimeout(() => {
+        //     if (radius < 10) radius += 1; else return
+
+        // }, 100)
+        // const cameraX = -1.75; // Oblicz nową pozycję kamery na osi X
+        const cameraX = -1.75 + Math.sin(time) * xOffset / 2; // Oblicz nową pozycję kamery na osi X
+        const cameraY = 11.85; // Zachowaj pozycję kamery na osi Y
+        const cameraZ = 23.35 + Math.cos(time) * xOffset * 2
+        // const cameraZ = Math.cos(time) * radius + 10; // Oblicz nową pozycję kamery na osi Z
+
+        camera.position.set(cameraX, cameraY, cameraZ); // Ustaw nową pozycję kamery
+        // camera.lookAt(0, 0, 0); // Skieruj kamerę na punkt (0, 0, 0)
+    };
+
+
+    meshInside.rotation.x = Math.PI * 0.5
+    meshInside.position.set(1.17, 11.9, -4)
+    meshInside.scale.set(1.5, 1, 1)
+
+    const updateXOffset = () => {
+        setInterval(() => {
+            if (xOffset <= 10) {
+                xOffset += 0.1;
+            } else { return }
+        }, 100);
+    };
+
+    updateXOffset();
     useFrame(() => {
         if (hue !== targetHue) {
             const diff = targetHue - hue;
@@ -40,15 +100,35 @@ export const SceneContainer = ({ darkMode }) => {
                 setHue(targetHue);
             }
         }
+        const camera = cameraRef.current;
 
+        if (camera) {
+            rotateCamera(camera, xOffset);
+        }
     }, 0);
+
+
 
     return (
         <Suspense fallback={null}>
-            <Environment background={"only"} files={process.env.PUBLIC_URL + "/textures/bg.hdr"} />
-            <Environment background={false} files={process.env.PUBLIC_URL + "/textures/envmap.hdr"} />
-            <PerspectiveCamera makeDefault fov={60} position={[-1.75, 7.85, 23.35]} />
+            <Environment background={"only"} files={"./textures/bg.hdr"} />
+            <Environment background={false} files={"./textures/envmap.hdr"} />
+
+            {!darkMode ?
+                <PerspectiveCamera makeDefault fov={60} position={[-1.75, 7.85, 23.35]} /> :
+                <PerspectiveCamera ref={userControlCamera ? null : cameraRef} makeDefault fov={60} position={[-1.75, 7.85, 23.35]} />
+            }
+
             <OrbitControls target={[2, 5, 3]} maxPolarAngle={Math.PI * 0.5} />
+            {darkMode &&
+                <Float
+                    speed={2.5}
+                    rotationIntensity={5.6}
+                    floatIntensity={5.6}
+                >
+                    <primitive object={meshInside} />
+                </Float>
+            }
             <Float
                 speed={0.5}
                 rotationIntensity={0.6}
@@ -84,7 +164,7 @@ export const SceneContainer = ({ darkMode }) => {
                 <BrightnessContrast brightness={0.0} contrast={0.035} />
                 <ChromaticAberration radialModulation={true} offset={[0.00175, 0.00175]} />
                 <GodRays
-                    sun={mesh}
+                    sun={darkMode ? meshInside : mesh}
                     blendFunction={BlendFunction.Screen}
                     samples={20}
                     density={0.97}

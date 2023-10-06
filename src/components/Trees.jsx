@@ -4,7 +4,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { useHighLight } from './hooks/useHighLight';
 
 export function Trees() {
-    const gltf = useLoader(GLTFLoader, process.env.PUBLIC_URL + "/models/trees.glb");
+    const gltf = useLoader(GLTFLoader, "./models/trees.glb");
     const { highLight, increaseHighLight, resetHighLight } = useHighLight(2.5, 5)
 
     useEffect(() => {
