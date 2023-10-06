@@ -2,35 +2,85 @@ import { Canvas } from "@react-three/fiber";
 import { SceneContainer } from "./components/SceneContainer";
 import { useState } from "react";
 import { SoundPlayer } from "./components/SoundPlayer";
+import { ReactComponent as ArrowsIcon } from "./icons/rotationArrows.svg";
+import _ from "lodash";
 
 const CanvasSizeStyles = {
-	width: "800px",
-	height: "600px",
+	width: "1200px",
+	height: "800px",
 	borderRadius: "10px",
 	border: "2px solid black",
 };
 
 const darkButtonStyle = {
-	backgroundColor: "black",
-	color: "#fff",
 	border: "none",
 	padding: "10px",
-	borderRadius: "10px",
+	width: "80px",
+	height: "80px",
 	margin: "10px",
-	fontSize: "2rem",
+	transition: "0.9s",
 };
 
 const backgroundStyled = {
 	width: "100%",
 	height: "100%",
 	display: "flex",
+	alignContent: "flex-start",
+	justifyContent: "center",
+	flexWrap: "wrap",
+};
+
+const rotationArrowsStyles = {
+	cursor: "pointer",
+	width: "70px",
+	height: "70px",
+	marginLeft: "70px",
+};
+
+const menuBarStyles = {
+	background: "#000",
+	width: "100%",
+	height: "100px",
+	display: "flex",
 	justifyContent: "center",
 	alignItems: "center",
 };
 
+const spotLights = [
+	{
+		color: "#442277",
+		intensity: 4,
+		angle: 0.6,
+		penumbra: 0.5,
+		position: [35, 5, 5],
+		castShadow: true,
+		"shadow-bias": -0.0001,
+	},
+	{
+		color: "#bb8888",
+		intensity: 5,
+		angle: 0.6,
+		penumbra: 0.5,
+		position: [-35, 15, 15],
+		castShadow: true,
+		"shadow-bias": -0.0001,
+	},
+];
+
 function App() {
 	const [darkMode, setDarkMode] = useState(false);
 	const [playSoundSignal, setPlaySoundSignal] = useState(false);
+	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+
+	const handleDarkModeToggle = _.debounce(() => {
+		setIsButtonDisabled(true);
+		setDarkMode((prevDarkMode) => !prevDarkMode);
+		setPlaySoundSignal(!playSoundSignal);
+		setTimeout(() => {
+			setIsButtonDisabled(false);
+		}, 500);
+	}, 500);
+
 	return (
 		<>
 			<div
@@ -39,39 +89,53 @@ function App() {
 					backgroundColor: darkMode ? "#222" : "#fff",
 				}}
 			>
-				<button
-					style={darkButtonStyle}
-					onClick={() => {
-						setDarkMode(!darkMode);
-						setPlaySoundSignal(!playSoundSignal);
-					}}
-				>
-					☠️ <br />
-					{"Click !"}
-				</button>
-				<SoundPlayer playSoundSignal={playSoundSignal} />
-				<Canvas style={CanvasSizeStyles}>
-					<spotLight
-						color={"#442277"}
-						intensity={4}
-						angle={0.6}
-						penumbra={0.5}
-						position={[35, 5, 5]}
-						castShadow
-						shadow-bias={-0.0001}
-					/>
-					<spotLight
-						color={"#bb8888"}
-						intensity={5}
-						angle={0.6}
-						penumbra={0.5}
-						position={[-35, 15, 15]}
-						castShadow
-						shadow-bias={-0.0001}
-					/>
-					<SceneContainer darkMode={darkMode} />
-				</Canvas>
+				<div style={menuBarStyles}>
+					<button
+						style={{
+							background: `url(${process.env.PUBLIC_URL}/icons/${
+								darkMode ? "uncheck.png" : "check.png"
+							}) center/cover no-repeat`,
+							...darkButtonStyle,
+						}}
+						onClick={() => !isButtonDisabled && handleDarkModeToggle()}
+					>
+						<br />
+					</button>
+					<div
+						style={rotationArrowsStyles}
+						onClick={() => alert("Rotate by holding mouse and move")}
+						disabled={isButtonDisabled}
+					>
+						<ArrowsIcon
+							width="70"
+							height="70"
+							fill="none"
+							stroke="#0044ff"
+							strokeWidth="3"
+						/>
+					</div>
+				</div>
+
+				<div>
+					<Canvas style={CanvasSizeStyles}>
+						{spotLights.map((spotLight, index) => (
+							<spotLight
+								key={index}
+								color={spotLight.color}
+								intensity={spotLight.intensity}
+								angle={spotLight.angle}
+								penumbra={spotLight.penumbra}
+								position={spotLight.position}
+								castShadow
+								shadow-bias={-0.0001}
+								target-position={[0, 0, -1]}
+							/>
+						))}
+						<SceneContainer darkMode={darkMode} />
+					</Canvas>
+				</div>
 			</div>
+			<SoundPlayer playSoundSignal={playSoundSignal} />
 		</>
 	);
 }

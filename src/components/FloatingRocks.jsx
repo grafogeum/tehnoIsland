@@ -5,7 +5,7 @@ import { DoubleSide } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { useHighLight } from './hooks/useHighLight';
 
-export function FloatingRocks() {
+export function FloatingRocks({ darkMode }) {
     const rock1 = useLoader(GLTFLoader, process.env.PUBLIC_URL + "/models/floating_rock_1.glb");
     const rock2 = useLoader(GLTFLoader, process.env.PUBLIC_URL + "/models/floating_rock_2.glb");
     const rock3 = useLoader(GLTFLoader, process.env.PUBLIC_URL + "/models/floating_rock_3.glb");
@@ -32,12 +32,12 @@ export function FloatingRocks() {
 
     return (
         <>
-            {rocks.map((rock, i) =>
+            {rocks.map((_, i) =>
                 <Float
                     key={[i, rocksPositions[i]].join('')}
                     speed={1.5}
-                    rotationIntensity={1.5}
-                    floatIntensity={0}
+                    rotationIntensity={darkMode ? 40 : 1.5}
+                    floatIntensity={darkMode ? 70 : 0}
                     position={rocksPositions[`rock${i + 1}`]}
                 >
 
